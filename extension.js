@@ -21,6 +21,7 @@ class MyExtension {
     global.log("Extension enabled!");
     this.settings = ExtensionUtils.getSettings(
       'org.gnome.shell.extensions.fshyperlinks');
+    this._getPathMapDict();
     this.connectClickEvent();    
     this._buildUI();
 
@@ -93,12 +94,75 @@ class MyExtension {
     log("disconnecting signals");
     this._selection.disconnect(this._ownerChangedId);
 	}
+
   _clipboardChanged() {
     this._clipboard.get_text(St.ClipboardType.PRIMARY,
         (clipboard, text) => {
-          log(text);
+          const findPathProps = this._detectPath(text);
+          if(findPathProps["detect"]){
+            let path = findPathProps["path"];
+            log(`Path detected: ${path}`);
+            if(findPathProps["platform"] == "unix"){
+              if(this._enableJump.state){
+                log(`Jump to location: ${path}`);
+                Gio.Subprocess.new(["xdg-open", `${path}`], Gio.SubprocessFlags.NONE);
+              }
+            }
+            else {
+              if(this._enableMapping.state){
+                path = this._mapPath(path);
+                log(`Path Mapped: ${path}`)
+              }
+              if(this._enableJump.state){
+                log(`Jump to location: ${path}`);
+                Gio.Subprocess.new(["xdg-open", `${path}`], Gio.SubprocessFlags.NONE);
+              }
+            }
+          }
+
+
         });
-}
+
+      }
+
+  _getPathMapDict() {
+    const pathMapString = this.settings.get_string('path-map');
+    const entries = pathMapString.split(";");
+    this._pathMapDict = {};
+    for (const i in entries) {
+      const [key, val] = entries[i].split("->");
+      this._pathMapDict[key] = val;
+    }
+  }
+
+  _detectPath(text){
+    const regexUnix = new RegExp(/(\/[\w -|+]*)/g);
+    const regexWin = new RegExp(/[A-Z]:\\[\w -|+]*/g);
+    let reU;
+    let reW;
+    reU = regexUnix.exec(text);
+    reW = regexWin.exec(text);
+    let findPathProps = {};
+    findPathProps["platform"] = reU != null ? "unix" : "win"; 
+    findPathProps["path"] = reU != null ? reU[0] : reW != null ? reW[0] : "";
+    findPathProps["detect"] = reU != null | reW != null;
+    return findPathProps;
+  }
+
+  _mapPath(path){
+    let mappedPath = "";
+    log(Object.entries(this._pathMapDict));
+    const keys = Object.keys(this._pathMapDict);
+    for(const i in keys){
+      const key = keys[i];
+      const r = key.replace("\\", "\\\\");
+      const regex = new RegExp(`^${r}`);
+      mappedPath = path.replace(regex, this._pathMapDict[key]);
+      mappedPath = mappedPath.replace("\\", "/");
+    }
+    if(mappedPath != "") return mappedPath;
+    else return path;
+  }
 }
 
 function init() {
