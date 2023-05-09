@@ -9,7 +9,7 @@
       <default>true</default>
     </key>
     <key name="path-map" type="s">
-        <default>"T:\->/media/white"</default>
+        <default>"T:\->/media/white/;Y:\->/media/white/"</default>
     </key>
   </schema>
 </schemalist>
