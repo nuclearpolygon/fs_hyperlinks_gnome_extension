@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.fshyperlinks" path="/org/gnome/shell/extensions/fshyperlinks/">
+    <!-- See also: https://docs.gtk.org/glib/gvariant-format-strings.html -->
+    <key name="enable-path-map" type="b">
+      <default>true</default>
+    </key>
+        <key name="enable-jump" type="b">
+      <default>true</default>
+    </key>
+    <key name="path-map" type="s">
+        <default>"T:\->/media/white"</default>
+    </key>
+  </schema>
+</schemalist>

@@ -1,0 +1,8 @@
+{
+  "name": "FS Hyperlinks",
+  "description": "Click a path to jump there",
+  "uuid": "fshyperlinks@nuclear.polygon",
+  "shell-version": [
+    "3.38"
+  ]
+}
