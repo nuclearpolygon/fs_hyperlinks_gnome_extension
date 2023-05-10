@@ -133,7 +133,7 @@ class MyExtension {
               if(this._enableMapping.state){
                 path = this._mapPath(path);
                 // log(`Path Mapped: ${path}`)
-                this._clipboard.set_text(path);
+                this._clipboard.set_text(St.ClipboardType.PRIMARY, path);
               }
               if((this._enableJump.state & state == 20) | force){
                 // log(`Jump to location: ${path}`);
@@ -155,6 +155,7 @@ class MyExtension {
       const [key, val] = entries[i].split("->");
       this._pathMapDict[key] = val;
     }
+    log(Object.keys(this._pathMapDict));
   }
 
   _detectPath(text){
@@ -179,14 +180,16 @@ class MyExtension {
       const key = keys[i];
       const r = key.replace("\\", "\\\\");
       const regex = new RegExp(`^${r}`);
-      // log(r);
-      mappedPath = path.replace(regex, this._pathMapDict[key]);
-      const re = RegExp(/\\/g);
-      mappedPath = mappedPath.replace(re, "/");
+      if(regex.exec(path)){      
+        mappedPath = path.replace(regex, this._pathMapDict[key]);
+        const re = RegExp(/\\/g);
+        mappedPath = mappedPath.replace(re, "/");
+        return mappedPath;
+      }
+      
       // log(mappedPath);
     }
-    if(mappedPath != "") return mappedPath;
-    else return path;
+    return path;
   }
 }
 
