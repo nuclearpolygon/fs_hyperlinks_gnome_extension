@@ -66,7 +66,8 @@ const FsHyperlinksPrefsWidget = GObject.registerClass(
         active: this.settings.get_boolean ('enable-jump'),
         valign: Gtk.Align.CENTER,
         hexpand: false,
-        halign: Gtk.Align.END
+        halign: Gtk.Align.END,
+        tooltip_text: "Hold Ctrl for insatnt jump. Alt+J to jump into path from selection"
     });
     this.settings.bind(
         'enable-jump',
