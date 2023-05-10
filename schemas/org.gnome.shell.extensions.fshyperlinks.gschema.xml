@@ -9,7 +9,12 @@
       <default>true</default>
     </key>
     <key name="path-map" type="s">
-        <default>"T:\->/media/white/;Y:\->/media/white/"</default>
+        <default>"T:\\->/media/white/;Y:\\->/media/white/"</default>
+    </key>
+    
+    <key type="as" name="jump-path-from-cb">
+        <default><![CDATA[['<Alt>j']]]></default>
+        <summary>Jump to path from clipboard</summary>
     </key>
   </schema>
 </schemalist>

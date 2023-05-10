@@ -5,25 +5,39 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
+const Meta = imports.gi.Meta;
+const Shell = imports.gi.Shell;
+
 
 class MyExtension {
   constructor() {
     this._init();
-    this.clickEventId = 0;
-    this._indicator = null;
   }
 
   _init() {
     global.log("Extension initialized!");
+    this.clickEventId = 0;
+    this._indicator = null;
   }
 
   enable() {
     global.log("Extension enabled!");
     this.settings = ExtensionUtils.getSettings(
       'org.gnome.shell.extensions.fshyperlinks');
+    Main.wm.addKeybinding(
+      "jump-path-from-cb", 
+      this.settings, 
+      Meta.KeyBindingFlags.NONE,
+      Shell.ActionMode.ALL,
+      (display, screen, window, binding) => {
+          log('hokey pressed');
+          this._clipboardChanged(true);
+        }
+      );
     this._getPathMapDict();
     this.connectClickEvent();    
     this._buildUI();
+    log(Object.keys(Me));
 
   }
 
@@ -71,6 +85,7 @@ class MyExtension {
     this.clickEventId = null;
     this._indicator.destroy();
     this._indicator = null;
+    Main.wm.removeKeybinding("jump-path-from-cb");
   }
 
 	getMousePosition() {
@@ -83,7 +98,7 @@ class MyExtension {
     this._selection = global.display.get_selection();
     this._clipboard = St.Clipboard.get_default();
     this._ownerChangedId = this._selection.connect('owner-changed', () => {
-      log('selection changed');
+      // log('selection changed');
       this._clipboardChanged();
 
     });
@@ -95,26 +110,33 @@ class MyExtension {
     this._selection.disconnect(this._ownerChangedId);
 	}
 
-  _clipboardChanged() {
+  _clipboardChanged(force=false) {
     this._clipboard.get_text(St.ClipboardType.PRIMARY,
         (clipboard, text) => {
           const findPathProps = this._detectPath(text);
           if(findPathProps["detect"]){
             let path = findPathProps["path"];
-            log(`Path detected: ${path}`);
+            // log(`Path detected: ${path}`);
+            // let event = Clutter.get_current_event();
+            const [x, y, state] = global.get_pointer();
+            // log(state);
+            // log(`mask: ${Gdk.ModifierType.CONTROL_MASK}`)
             if(findPathProps["platform"] == "unix"){
-              if(this._enableJump.state){
+              if((this._enableJump.state & state == 20) | force){
                 log(`Jump to location: ${path}`);
+                log(state)
+                // log(event.get_key_symbol());
                 Gio.Subprocess.new(["xdg-open", `${path}`], Gio.SubprocessFlags.NONE);
               }
             }
             else {
               if(this._enableMapping.state){
                 path = this._mapPath(path);
-                log(`Path Mapped: ${path}`)
+                // log(`Path Mapped: ${path}`)
+                this._clipboard.set_text(path);
               }
-              if(this._enableJump.state){
-                log(`Jump to location: ${path}`);
+              if((this._enableJump.state & state == 20) | force){
+                // log(`Jump to location: ${path}`);
                 Gio.Subprocess.new(["xdg-open", `${path}`], Gio.SubprocessFlags.NONE);
               }
             }
@@ -151,14 +173,17 @@ class MyExtension {
 
   _mapPath(path){
     let mappedPath = "";
-    log(Object.entries(this._pathMapDict));
+    // log(Object.entries(this._pathMapDict));
     const keys = Object.keys(this._pathMapDict);
     for(const i in keys){
       const key = keys[i];
       const r = key.replace("\\", "\\\\");
       const regex = new RegExp(`^${r}`);
+      // log(r);
       mappedPath = path.replace(regex, this._pathMapDict[key]);
-      mappedPath = mappedPath.replace("\\", "/");
+      const re = RegExp(/\\/g);
+      mappedPath = mappedPath.replace(re, "/");
+      // log(mappedPath);
     }
     if(mappedPath != "") return mappedPath;
     else return path;
