@@ -16,4 +16,4 @@ Use **Alt+J** to jump to location detected in clipboard
 ### Browser integration
 
 1) Install Gnome Shell Integration for your browser ([Chrome](https://chrome.google.com/webstore/detail/gnome-shell-integration/gphhapmejobijbbhgpjhcjognlahblep?hl=ru), [Firefox](https://addons.mozilla.org/ru/firefox/addon/gnome-shell-integration/))
-2) Go here(link is not avaliable yet) and push the button
+2) Go [here](https://extensions.gnome.org/extension/5970/fs-hyperlinks/) and push the button
