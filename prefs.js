@@ -5,7 +5,7 @@ const {
 } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
-
+const version = Gtk.get_major_version();
 
 function init() {}
 
@@ -50,8 +50,14 @@ const FsHyperlinksPrefsWidget = GObject.registerClass(
                 'active',
                 Gio.SettingsBindFlags.DEFAULT
             );
-            row0.add(labelSwitchEnablePathMap);
-            row0.add(this.toggleEnablePathMap);
+            if(version == 3){
+                row0.add(labelSwitchEnablePathMap);
+                row0.add(this.toggleEnablePathMap);
+            }
+            else {
+                row0.append(labelSwitchEnablePathMap);
+                row0.append(this.toggleEnablePathMap);
+            }
             // Create the switch and bind its value to the `enable-jump` key
             let row2 = new Gtk.Box({
                 orientation: Gtk.Orientation.HORIZONTAL,
@@ -77,8 +83,14 @@ const FsHyperlinksPrefsWidget = GObject.registerClass(
                 'active',
                 Gio.SettingsBindFlags.DEFAULT
             );
-            row2.add(labelSwitchEnablePathJump);
-            row2.add(this.toggleEnablePathJump);
+            if(version == 3){
+                row2.add(labelSwitchEnablePathJump);
+                row2.add(this.toggleEnablePathJump);
+            }
+            else {
+                row2.append(labelSwitchEnablePathJump);
+                row2.append(this.toggleEnablePathJump);
+            }
             // Create the textfield and bind its value to the `path-map` key
             let row1 = new Gtk.Box({
                 orientation: Gtk.Orientation.HORIZONTAL,
@@ -102,14 +114,27 @@ const FsHyperlinksPrefsWidget = GObject.registerClass(
                 'text',
                 Gio.SettingsBindFlags.DEFAULT
             );
-            row1.add(labelPathMatp);
-            row1.add(this.textMap);
+            if(version == 3){
+                row1.add(labelPathMatp);
+                row1.add(this.textMap);
+            }
+            else {
+                row1.append(labelPathMatp);
+                row1.append(this.textMap);
+            }
             // Add the switch to the row
-
-            this.add(row0);
-            this.add(row2);
-            this.add(row1);
-            this.show_all();
+            if(version==3){
+                this.add(row0);
+                this.add(row2);
+                this.add(row1);
+            }
+            else{
+                this.append(row0);
+                this.append(row2);
+                this.append(row1);
+            }
+            if(version == 3) this.show_all();
+            else this.set_visible(true);
 
         }
     });

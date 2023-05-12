@@ -3,7 +3,7 @@
   "description": "Select a path to jump there (When Ctrl is down)",
   "uuid": "fshyperlinks@nuclear.polygon",
   "shell-version": [
-    "3.38", "3.39", "3.40", "3.41", "3.42"
+    "3.38", "3.39", "40", "41", "42", "43", "44"
   ],
   "url": "https://github.com/nuclearpolygon/fs_hyperlinks_gnome_extension"
 }
